@@ -49,12 +49,11 @@ public class IOHandler {
         frame.getContentPane().add(lbIm2, c);
     }
 
-	public BufferedImage readImageFromFile(String filename, int width, int height) {
+	public BufferedImage readImageFromFile(File file, int width, int height) {
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
 		try {
-			File file = new File(filename);
 			InputStream is = new FileInputStream(file);
 
 			long len = file.length();
