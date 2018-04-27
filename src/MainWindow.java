@@ -9,7 +9,7 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new GridLayout(1,2));
-        contentPanel.add(new VideoPlayer("QueryVideo", "/Users/darvishkamalia/Desktop/finalProject/databse_videos/musicvideo"));
+        contentPanel.add(new VideoPlayer("QueryVideo", "/Users/darvishkamalia/Desktop/finalProject/databse_videos/movie"));
         contentPanel.add(new VideoPlayer("SelectedVideo", "/Users/darvishkamalia/Desktop/finalProject/databse_videos/flowers"));
         this.setContentPane(contentPanel);
         this.pack();

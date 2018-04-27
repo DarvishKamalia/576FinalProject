@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class VideoPlayer extends JPanel {
     IOHandler handler = new IOHandler();
@@ -48,24 +49,27 @@ public class VideoPlayer extends JPanel {
     public void load(String videoPath)  {
         File dir = new File(videoPath);
         File[] directoryListing = dir.listFiles();
+        Arrays.sort(directoryListing);
         if (directoryListing != null) {
             for (File frameFile : directoryListing) {
                 if (frameFile.getAbsolutePath().contains(".rgb")) { // Ensure it is a frame file
                     imageSequence.add(frameFile);
+
                 }
             }
         }
     }
 
     public void play() {
-        int delay = 300; //milliseconds
+        int delay = 50; //milliseconds
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 File frameFile = imageSequence.get(currentLocation);
+                //System.out.println(frameFile.getAbsolutePath());
                 panel.img = handler.readImageFromFile(frameFile, 352, 288);
                 panel.repaint();
                 currentLocation++;
-                System.out.println(currentLocation);
+                //System.out.println(currentLocation);
                 if (currentLocation == imageSequence.size()) {
                     currentLocation = 0;
                 }
