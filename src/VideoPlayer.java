@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,13 +13,21 @@ public class VideoPlayer extends JPanel {
     ArrayList<File> imageSequence = new ArrayList<File>();
     int currentLocation = 0;
     Timer playTimer = null;
+    static int frameTime = 50;
 
     public VideoPlayer(String title, String filePath) {
+
+        this.setLayout(new BorderLayout());
         JLabel titleLabel = new JLabel(title);
-        this.add(titleLabel);
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        this.add(titleLabel, BorderLayout.NORTH);
+
 
         JButton playButton = new JButton("Play");
-        this.add(playButton);
+
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+        controlPanel.add(playButton);
 
         final VideoPlayer parent = this;
 
@@ -31,16 +40,30 @@ public class VideoPlayer extends JPanel {
         });
 
         panel.setPreferredSize(new Dimension(500, 200));
-        this.add(panel);
+        this.add(panel, BorderLayout.CENTER);
 
         JButton pauseButton = new JButton("Pause");
-        this.add(pauseButton);
+        controlPanel.add(pauseButton);
 
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 parent.pause();
             }
         });
+
+
+        JButton stopButton = new JButton("Stop");
+        controlPanel.add(stopButton);
+
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.stop();
+            }
+        });
+
+        this.add(controlPanel, BorderLayout.SOUTH);
+
 
         load(filePath);
     }
@@ -61,7 +84,6 @@ public class VideoPlayer extends JPanel {
     }
 
     public void play() {
-        int delay = 50; //milliseconds
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 File frameFile = imageSequence.get(currentLocation);
@@ -75,11 +97,16 @@ public class VideoPlayer extends JPanel {
                 }
             }
         };
-        playTimer = new Timer(delay, taskPerformer);
+        playTimer = new Timer(frameTime, taskPerformer);
         playTimer.start();
     }
 
     public void pause() {
         playTimer.stop();
+    }
+
+    public void stop() {
+        playTimer.stop();
+        currentLocation = 0;
     }
 }
