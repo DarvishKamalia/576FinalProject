@@ -15,7 +15,7 @@ public class VideoPlayer extends JPanel {
     Timer playTimer = null;
     static int frameTime = 50;
 
-    public VideoPlayer(String title, String filePath) {
+    public VideoPlayer(String title) {
 
         this.setLayout(new BorderLayout());
         JLabel titleLabel = new JLabel(title);
@@ -63,13 +63,11 @@ public class VideoPlayer extends JPanel {
         });
 
         this.add(controlPanel, BorderLayout.SOUTH);
-
-
-        load(filePath);
     }
 
     // Takes in the path to the folder containing the RGB files
     public void load(String videoPath)  {
+        imageSequence.clear();
         File dir = new File(videoPath);
         File[] directoryListing = dir.listFiles();
         Arrays.sort(directoryListing);
