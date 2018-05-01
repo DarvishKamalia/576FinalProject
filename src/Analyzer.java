@@ -61,7 +61,6 @@ public class Analyzer {
 				offset += numRead;
 			}
 
-
 			int ind = 0;
 			for(int y = 0; y < height; y++){
 
@@ -73,7 +72,7 @@ public class Analyzer {
 					byte b = bytes[ind+height*width*2]; 
 
 					pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
-					pixelValues[height][width] = pix;
+					pixelValues[y][x] = pix;
 				
 					//int pix = ((a << 24) + (r << 16) + (g << 8) + b);
 					myImage.setRGB(x,y,pix);
@@ -84,8 +83,7 @@ public class Analyzer {
 					blueValue = pix & 0xFF;
 				}
 			}
-
-
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -94,39 +92,11 @@ public class Analyzer {
 		return pixelValues;
 	}
 	
-	public static float[] RGBtoHSB(double r, double g, double b) {
-		
+	public static float[] RGBtoHSB(double r, double g, double b) {	
 		return Color.RGBtoHSB((int)r, (int)g, (int)b, hsbValues);
-		
 	}
-	
 
-	
-	public static void firstKMeansClusteringH(double h) {
-		boolean flag = false;
-		do {
-			
-		} while(flag);
-		
-		KMeans kmeans = new KMeans();
-		
-		int hCount = 0;
-	
-		while (h <= 1) {
-			if (h >= 0 && h < 0.25) {
-				h = 0.125 + 0.25 * hCount;
-
-				for (int i = 0; i < 64; i++) {
-					kmeans.setHValue(h);
-				}
-				break;
-			} else if (h >= 0.25) {
-				h = h - 0.25;
-				hCount++;
-			} 
-	}
-}
-
+	//finish this
 	public static void storeEuclidianDistances() {
 		KMeans euclid = new KMeans();
 		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
@@ -134,10 +104,7 @@ public class Analyzer {
 		}
 	}
 	
-	public static void calculateVideos() {
-		
-	}
-	
+
 	public static void insertionSort(double array[]) {
 		 int n = array.length;  
 		 for (int j = 1; j < n; j++) {  
@@ -167,26 +134,25 @@ public class Analyzer {
 		ArrayList<Double> hValues = new ArrayList<Double>();
 		
 		KMeans kMeans  = new KMeans();
+		int count = 0;
 		
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				redValue = ((int) rgbValues[width][height] >> 16) & 0xFF;
-				greenValue = ((int) rgbValues[width][height] >> 8) & 0xFF;
-				blueValue = (int) rgbValues[width][height] & 0xFF;
+				redValue = ((int) rgbValues[j][i] >> 16) & 0xFF;
+				greenValue = ((int) rgbValues[j][i] >> 8) & 0xFF;
+				blueValue = (int) rgbValues[j][i] & 0xFF;
 				
 				double[] bucketedRGB = bucketTo4096(redValue, greenValue, blueValue);
 				
-				for (int k = 0; k < NUMBER_OF_CLUSTERS;k++) {
-					float[] hsbValues = RGBtoHSB(bucketedRGB[0], bucketedRGB[1], bucketedRGB[2]);
-					hValues.add((double) hsbValues[0]);
-				}
+				
+				float[] hsbValues = RGBtoHSB(bucketedRGB[0], bucketedRGB[1], bucketedRGB[2]);
+				hValues.add((double) hsbValues[0]);
+				
 			}
 		}
+		System.out.println(hValues);
 		
 		kMeans.sort(hValues);
-		
-		
-		
 			
 	}
 
