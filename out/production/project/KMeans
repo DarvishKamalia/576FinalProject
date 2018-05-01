@@ -1,0 +1,109 @@
+package org.wikijava.sound.playWave;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
+
+public class KMeans {
+	private final static int NUMBER_OF_CLUSTERS = 64;
+	static double[] sums = new double[NUMBER_OF_CLUSTERS];
+	static double[] means = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans = new double[NUMBER_OF_CLUSTERS];
+	
+	static ArrayList<ArrayList<Integer>> clusterNumbersOuter = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<Double> clusterValuesInner = new ArrayList<Double>();
+	
+	private double HValue;
+
+
+	 public void setHValue(double h) {
+		 this.HValue = h;
+	 }
+	 
+	 public double getHValue() {
+		 return HValue;
+	 }
+
+
+	public static void main(String args[]) {
+	
+		boolean flag = true;
+		
+		for (int f = 0; f < NUMBER_OF_CLUSTERS; f++ ) {
+			//initialize all sums to 0
+			sums[f] = 0.0;
+			
+			//arbitrarily set all means to the first value in each cluster to start
+			means[f] = clusterNumbersOuter.get(f).get(0);
+			
+			//64 clusters with cluster number at index
+			clusterNumbersOuter.get(f).get(f+1); 
+		}
+		
+		int countOfChangedValues = 0;
+		int movedValue;
+		do {
+			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
+				double[] storeMeanValues;
+				
+			}
+			
+			
+			double minimum = Double.POSITIVE_INFINITY;
+			int clusterNumber;
+			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
+				for (int m = 0; m < clusterValuesInner.size(); m++) {
+					if (Math.abs((clusterValuesInner.get(m) - means[i])) < minimum) {
+						//change minimum difference
+						minimum = Math.abs(clusterValuesInner.get(m) - means[i]);
+						
+						//remove value from original cluster
+						clusterValuesInner.remove(m);
+						//add value to new cluster
+						clusterNumbersOuter.get(i).get(m);	
+						movedValue = clusterNumbersOuter.get(i).get(m);
+						countOfChangedValues++;
+					
+					} 
+						
+				}
+				
+				//recalculate sums
+				for (int j = 0;j < countOfChangedValues; j++) {
+					for(i = 1; i < clusterNumbersOuter.get(i).get(j); i++) {
+						sums[j] += clusterValuesInner.get(i);
+					}
+				}
+				
+				//recalculate means
+				for (int j = 0; j < means.length; j++) {
+					means[j] = sums[j]/clusterValuesInner.get(j);
+				}
+			}
+		} while (flag);
+			
+	}
+	
+	public static void extractHistograms() {
+		//during matching each of five histograms from query image is matched to the corresponding histogram of database images
+		
+		//in order to incorporate similarity between colors, we define color similarity mattrix
+		
+		//H'(i) = summation of(H(j)*A(i,j) from j = 1-64).... H' is smoothed and H(j) is original
+		KMeans hist = new KMeans();
+		
+		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
+			for (int j = 0; j < NUMBER_OF_CLUSTERS; j++) {
+				normalizedMeans[i] = means[i] * hist.calcEuclidianDistance(means[i], means[j]);
+			}
+		}
+		
+	}
+	
+	public static double calcEuclidianDistance(double h1, double h2) {
+		return Math.sqrt(Math.pow(Math.abs(h1-h2), 2));
+	}
+	
+}

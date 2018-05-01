@@ -1,7 +1,12 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,14 +19,29 @@ public class VideoPlayer extends JPanel {
     Timer playTimer = null;
     static int frameTime = 50;
     AePlayWave audioPlayer = new AePlayWave();
+    JSlider scrubber = new JSlider(JSlider.HORIZONTAL);
+    MainWindow mainWindow;
+    boolean isPaused = false;
 
-    public VideoPlayer(String title) {
+    public VideoPlayer(String title, MainWindow mainWindow) {
+
+        this.mainWindow = mainWindow;
 
         this.setLayout(new BorderLayout());
         JLabel titleLabel = new JLabel(title);
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         this.add(titleLabel, BorderLayout.NORTH);
+        final VideoPlayer parent = this;
 
+
+        scrubber.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (isPaused) scrubToPosition(scrubber.getValue());
+            }
+        });
+
+        this.add(scrubber, BorderLayout.NORTH);
 
         JButton playButton = new JButton("Play");
 
@@ -29,7 +49,6 @@ public class VideoPlayer extends JPanel {
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
         controlPanel.add(playButton);
 
-        final VideoPlayer parent = this;
 
         playButton.addActionListener(new ActionListener()
         {
@@ -83,20 +102,41 @@ public class VideoPlayer extends JPanel {
                 }
             }
         }
+
+        scrubber.setMaximum(imageSequence.size() - 1);
+        loadFromCurrentPosition();
+    }
+
+    public void scrubToPosition (int position) {
+        if (playTimer != null && playTimer.isRunning()) {
+            pause();
+        }
+
+        currentLocation = position;
+        loadFromCurrentPosition();
+    }
+
+    public void loadFromCurrentPosition() {
+        File frameFile = imageSequence.get(currentLocation);
+        //System.out.println(frameFile.getAbsolutePath());
+        panel.img = handler.readImageFromFile(frameFile, 352, 288);
+        panel.repaint();
+        scrubber.setValue(currentLocation);
+        mainWindow.didSet
     }
 
     public void play() {
+        isPaused = false;
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                File frameFile = imageSequence.get(currentLocation);
-                //System.out.println(frameFile.getAbsolutePath());
-                panel.img = handler.readImageFromFile(frameFile, 352, 288);
-                panel.repaint();
+                loadFromCurrentPosition();
                 currentLocation++;
                 //System.out.println(currentLocation);
                 if (currentLocation == imageSequence.size()) {
                     currentLocation = 0;
                 }
+
+                scrubber.setValue(currentLocation);
             }
         };
         playTimer = new Timer(frameTime, taskPerformer);
@@ -107,10 +147,13 @@ public class VideoPlayer extends JPanel {
     public void pause() {
         playTimer.stop();
         audioPlayer.pause();
+        isPaused = true;
     }
 
     public void stop() {
+        isPaused = true;
         playTimer.stop();
         currentLocation = 0;
+        loadFromCurrentPosition();
     }
 }

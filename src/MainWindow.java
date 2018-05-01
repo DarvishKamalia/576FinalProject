@@ -1,11 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class MainWindow extends JFrame {
 
     private QueryResultsPanel queryResultsPanel;
-    private VideoPlayer queryVideoPlayer = new VideoPlayer("Query Video");
-    private VideoPlayer resultVideoPlayer = new VideoPlayer("Result Video");
+    private VideoPlayer queryVideoPlayer;
+    private VideoPlayer resultVideoPlayer;
+    private SimilarityChartView chart = new SimilarityChartView();
+    private
 
     public MainWindow() {
         setTitle("576 Final Project");
@@ -13,8 +17,11 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JPanel contentPanel = new JPanel();
         queryResultsPanel = new QueryResultsPanel(this);
+        queryVideoPlayer = new VideoPlayer("Query Video", this);
+        resultVideoPlayer = new VideoPlayer("Result Video", this);
         contentPanel.setLayout(new GridLayout(2,2));
         contentPanel.add(queryResultsPanel);
+        contentPanel.add(chart);
         contentPanel.add(queryVideoPlayer);
         contentPanel.add(resultVideoPlayer);
         this.setContentPane(contentPanel);
@@ -24,7 +31,7 @@ public class MainWindow extends JFrame {
     public void didSelectQueryVideo(String video) {
         queryVideoPlayer.load(Constants.baseDirectory + Constants.queryDirectory + video);
 
-        // Perform Query
+        // TODO: Replace
         String[] results = {"flowers", "movie", "musicvideo"};
         queryResultsPanel.setResults(results);
 
@@ -32,6 +39,19 @@ public class MainWindow extends JFrame {
 
     public void didSelectResultVideo(String video) {
         resultVideoPlayer.load(Constants.baseDirectory + Constants.dataBaseDirectory + video);
-        // Update chart view R
+
+        // TODO: Replace
+        ArrayList<Double> values = new ArrayList<Double>();
+
+        for (int i = 0; i < 100; i++) {
+            double start = 0;
+            double end = 1;
+            double random = new Random().nextDouble();
+            double result = start + (random * (end - start));
+            values.add(result);
+        }
+        chart.loadSimilarityChart(values);
     }
+
+
 }
