@@ -1,5 +1,3 @@
-
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +12,7 @@ import org.wikijava.sound.playWave.KMeans;
 import java.awt.Color;
 import java.lang.Object;
 
-public class Analyzer {
+public class FinalProject {
 	private static float[] hsbValues = {0,0,0};
 	private final static int NUMBER_OF_CLUSTERS = 64;
 	
@@ -120,9 +118,7 @@ public class Analyzer {
 				h = 0.125 + 0.25 * hCount;
 
 				for (int i = 0; i < 64; i++) {
-					for (int j = 0; j < 1584; j++) {
-						kmeans.setHValue(h);
-					}
+					kmeans.setHValue(h);
 				}
 				break;
 			} else if (h >= 0.25) {
@@ -130,6 +126,7 @@ public class Analyzer {
 				hCount++;
 			} 
 	}
+}
 
 	public static void storeEuclidianDistances() {
 		KMeans euclid = new KMeans();
@@ -145,6 +142,7 @@ public class Analyzer {
 		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
 			test.calculateRGB(myFile);
 		}
-	
+			
 	}
+
 }
