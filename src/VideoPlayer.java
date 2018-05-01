@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +13,7 @@ public class VideoPlayer extends JPanel {
     int currentLocation = 0;
     Timer playTimer = null;
     static int frameTime = 50;
+    AePlayWave audioPlayer = new AePlayWave();
 
     public VideoPlayer(String title) {
 
@@ -77,6 +77,10 @@ public class VideoPlayer extends JPanel {
                     imageSequence.add(frameFile);
 
                 }
+                //WTF
+                else if (frameFile.getAbsolutePath().contains(".wav")){
+                    audioPlayer.load(frameFile.getAbsolutePath());
+                }
             }
         }
     }
@@ -97,10 +101,12 @@ public class VideoPlayer extends JPanel {
         };
         playTimer = new Timer(frameTime, taskPerformer);
         playTimer.start();
+        audioPlayer.play();
     }
 
     public void pause() {
         playTimer.stop();
+        audioPlayer.pause();
     }
 
     public void stop() {
