@@ -4,13 +4,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 
+import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.statistics.HistogramType;
 import org.wikijava.sound.playWave.KMeans;
-
 import java.awt.Color;
-import java.lang.Object;
 
 public class Analyzer {
 	private static float[] hsbValues = {0,0,0};
@@ -41,12 +40,12 @@ public class Analyzer {
 		return rgbValues;
 	}
 	
-	public static int[][] calculateRGB(String myFile) {
-		int redValue= 0, greenValue = 0, blueValue = 0;
+	public static double[][] calculateRGB(String myFile) {
+		double redValue= 0, greenValue = 0, blueValue = 0;
 		int width = 352;
 		int height = 288;
 		int pix = 0;
-		int[][] pixelValues = new int[height][width];
+		double[][] pixelValues = new double[height][width];
 		BufferedImage myImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		
 		try {
@@ -153,16 +152,40 @@ public class Analyzer {
 		    
 	}
 	
+	//finish this
 	public static void createHistogram() {
-		
+		HistogramDataset dataset = new HistogramDataset();
+		dataset.setType(HistogramType.RELATIVE_FREQUENCY);
 	}
 	
-	public static void main(String args[]) {
-		FinalProject test = new FinalProject();
-		KMeans testk = new KMeans();
-		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-			test.calculateRGB("first001.rgb");
+	public static void main(String[] args) {
+		double[][] rgbValues = calculateRGB("first001.rgb");
+		double redValue = 0, greenValue = 0, blueValue = 0;
+		int width = 352;
+		int height = 288;
+		
+		ArrayList<Double> hValues = new ArrayList<Double>();
+		
+		KMeans kMeans  = new KMeans();
+		
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				redValue = ((int) rgbValues[width][height] >> 16) & 0xFF;
+				greenValue = ((int) rgbValues[width][height] >> 8) & 0xFF;
+				blueValue = (int) rgbValues[width][height] & 0xFF;
+				
+				double[] bucketedRGB = bucketTo4096(redValue, greenValue, blueValue);
+				
+				for (int k = 0; k < NUMBER_OF_CLUSTERS;k++) {
+					float[] hsbValues = RGBtoHSB(bucketedRGB[0], bucketedRGB[1], bucketedRGB[2]);
+					hValues.add((double) hsbValues[0]);
+				}
+			}
 		}
+		
+		kMeans.sort(hValues);
+		
+		
 		
 			
 	}
