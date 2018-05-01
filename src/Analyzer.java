@@ -12,7 +12,7 @@ import org.wikijava.sound.playWave.KMeans;
 import java.awt.Color;
 import java.lang.Object;
 
-public class FinalProject {
+public class Analyzer {
 	private static float[] hsbValues = {0,0,0};
 	private final static int NUMBER_OF_CLUSTERS = 64;
 	
@@ -135,13 +135,35 @@ public class FinalProject {
 		}
 	}
 	
-
+	public static void calculateVideos() {
+		
+	}
+	
+	public static void insertionSort(double array[]) {
+		 int n = array.length;  
+		 for (int j = 1; j < n; j++) {  
+			 double key = array[j];  
+		     int i = j-1;  
+		     while ( (i > -1) && ( array [i] > key ) ) {  
+		    	 array [i+1] = array [i];  
+		         i--;  
+		     }  
+		     	array[i+1] = key;  
+		     }  
+		    
+	}
+	
+	public static void createHistogram() {
+		
+	}
+	
 	public static void main(String args[]) {
 		FinalProject test = new FinalProject();
 		KMeans testk = new KMeans();
 		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-			test.calculateRGB(myFile);
+			test.calculateRGB("first001.rgb");
 		}
+		
 			
 	}
 
