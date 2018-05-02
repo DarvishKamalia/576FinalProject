@@ -22,6 +22,8 @@ public class MainWindow extends JFrame {
     private IOHandler handler = new IOHandler();
     private HashMap< String, ArrayList< int []> > databaseMap = new HashMap<String, ArrayList<int[]>>();
     private KMeans means = new KMeans();
+    private String queryVideoPath = "";
+    private ArrayList<int[]> queryHistograms = null;
 
     public MainWindow() throws Exception {
         setTitle("576 Final Project");
@@ -91,26 +93,29 @@ public class MainWindow extends JFrame {
 
     public void didSelectQueryVideo(String video) {
         String videoPath = Constants.baseDirectory + Constants.queryDirectory + video;
+        queryVideoPath = videoPath;
+
         queryVideoPlayer.load(videoPath);
 
 
         queryResultsPanel.setResults(processQuery(videoPath));
 
-        // TODO: Replace
+//        ArrayList < ArrayList <Double> > topLeft = new ArrayList < ArrayList < Double> >();
+//        ArrayList < ArrayList <Double> > topRight = new ArrayList < ArrayList < Double> >();
+//        ArrayList < ArrayList <Double> > bottomLeft = new ArrayList < ArrayList < Double> >();
+//        ArrayList < ArrayList <Double> > bottomRight = new ArrayList < ArrayList < Double> >();
+//
+//        for (int i = 0; i < 64; i++) {
+//            topLeft.add(generateValues());
+//            topRight.add(generateValues());
+//            bottomLeft.add(generateValues());
+//            bottomRight.add(generateValues());
 
-        ArrayList < ArrayList <Double> > topLeft = new ArrayList < ArrayList < Double> >();
-        ArrayList < ArrayList <Double> > topRight = new ArrayList < ArrayList < Double> >();
-        ArrayList < ArrayList <Double> > bottomLeft = new ArrayList < ArrayList < Double> >();
-        ArrayList < ArrayList <Double> > bottomRight = new ArrayList < ArrayList < Double> >();
 
-        for (int i = 0; i < 64; i++) {
-            topLeft.add(generateValues());
-            topRight.add(generateValues());
-            bottomLeft.add(generateValues());
-            bottomRight.add(generateValues());
-        }
+ //       }
 
-        queryHistogramPanel.loadHistograms(topLeft, topRight, bottomLeft, bottomRight);
+        queryHistograms = builder.getHistograms(centers, handler, videoPath);
+        queryHistogramPanel.loadHistogram(queryHistograms);
     }
 
     private ArrayList<String> processQuery(String videoPath) {
@@ -133,7 +138,7 @@ public class MainWindow extends JFrame {
     }
 
     private ArrayList<String> getDatabaseMatchScores (BufferedImage frame) {
-        int[] queryHistogram = builder.getCounts(frame, centers);
+        int [] queryHistogram = builder.getCounts(frame, centers);
 
         ArrayList<String> result = new ArrayList<String>();
 
@@ -153,18 +158,36 @@ public class MainWindow extends JFrame {
 
             // Min distance frame in the video has been found
 
-            result.add(pair.getKey() + "    distance = " + Double.toString(minDistance));
+            result.add(pair.getKey() + " - distance = " + Double.toString(minDistance));
         }
 
         return result;
     }
 
     public void didSelectResultVideo(String video) {
-        resultVideoPlayer.load(Constants.baseDirectory + Constants.dataBaseDirectory + video);
+        String videoName = video.substring(0, video.indexOf(" - " ));
+        resultVideoPlayer.load(Constants.baseDirectory + Constants.dataBaseDirectory + videoName);
 
-        // TODO: Replace
-        chart.loadSimilarityChart(generateValues());
+        ArrayList<int[]> resultVideoHistograms = databaseMap.get(videoName);
+        int[] queryVideoHistogram = queryHistograms.get(0);
 
+
+        ArrayList < Double > differences = new ArrayList<Double>();
+
+        for (int[] frameHistogram : resultVideoHistograms) {
+            differences.add(arrayDifference(frameHistogram, queryVideoHistogram));
+        }
+
+        chart.loadSimilarityChart(differences);
+        resultVideoPanel.loadHistogram(databaseMap.get(videoName));
+    }
+
+    private double arrayDifference(int[] first, int[] second) {
+        double difference = 0.0;
+        for (int i = 0; i < first.length; i++) {
+            difference += Math.abs(first[i] - second[i]);
+        }
+        return difference;
     }
 
     private ArrayList <Double> generateValues() {

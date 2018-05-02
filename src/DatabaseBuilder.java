@@ -39,23 +39,8 @@ public class DatabaseBuilder {
 
         for (String videoName : videoNames) {
             String videoPath = Constants.baseDirectory + Constants.dataBaseDirectory + videoName;
-            File dir = new File(videoPath);
-            File[] directoryListing = dir.listFiles();
-            Arrays.sort(directoryListing);
 
-            ArrayList < int[] > frameHistograms = new ArrayList< int [] >();
-
-            if (directoryListing != null) {
-                for (int i = 0; i < directoryListing.length; i++) {
-                    File frameFile = directoryListing[i];
-                    if (frameFile.getAbsolutePath().contains(".rgb")) { // Ensure it is a frame file
-                        BufferedImage frame = handler.readImageFromFile(frameFile);
-                        int[] result = getCounts(frame, centers);
-                        frameHistograms.add(result);
-                        System.out.println("Completed a frame: " + Integer.toString(i));
-                    }
-                }
-            }
+            ArrayList<int[]> frameHistograms = getHistograms(centers, handler, videoPath);
 
             writeObjectToFile(frameHistograms, Constants.baseDirectory + Constants.dataBaseDirectory + Constants.histogramDirectory + videoName + ".hst");
 
@@ -63,6 +48,27 @@ public class DatabaseBuilder {
 //                System.out.println(Arrays.toString(list);
 //            }
         }
+    }
+
+    public ArrayList<int[]> getHistograms(ColorTuple[] centers, IOHandler handler, String videoPath) {
+        File dir = new File(videoPath);
+        File[] directoryListing = dir.listFiles();
+        Arrays.sort(directoryListing);
+
+        ArrayList < int[] > frameHistograms = new ArrayList< int [] >();
+
+        if (directoryListing != null) {
+            for (int i = 0; i < directoryListing.length; i++) {
+                File frameFile = directoryListing[i];
+                if (frameFile.getAbsolutePath().contains(".rgb")) { // Ensure it is a frame file
+                    BufferedImage frame = handler.readImageFromFile(frameFile);
+                    int[] result = getCounts(frame, centers);
+                    frameHistograms.add(result);
+                    System.out.println("Completed a frame: " + Integer.toString(i));
+                }
+            }
+        }
+        return frameHistograms;
     }
 
     public int[] getCounts (BufferedImage frame, ColorTuple[] centers) {

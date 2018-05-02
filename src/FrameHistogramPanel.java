@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class FrameHistogramPanel extends JPanel {
     class InternalChartPanel extends JPanel {
         private ChartPanel chartPanel = null;
-        public ArrayList < ArrayList < Double > > allValues;
+        public ArrayList < int[] > allValues;
 
         public InternalChartPanel() {
             this.setLayout (new BorderLayout());
@@ -24,11 +24,11 @@ public class FrameHistogramPanel extends JPanel {
 
         public void showChartForFrame (int frameIndex) {
 
-            ArrayList < Double > values = allValues.get(frameIndex);
+           int[] values = allValues.get(frameIndex);
             DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
 
-            for (int i = 0 ; i < values.size(); i++) {
-                dataSet.addValue(values.get(i), "similarity", Integer.toString(i));
+            for (int i = 0 ; i < values.length; i++) {
+                dataSet.addValue(values[i], "similarity", Integer.toString(i));
             }
 
             JFreeChart chart = ChartFactory.createBarChart("", "", "Count", dataSet);
@@ -54,7 +54,7 @@ public class FrameHistogramPanel extends JPanel {
     private InternalChartPanel topRightPanel = new InternalChartPanel();
     private InternalChartPanel topLeftPanel = new InternalChartPanel();
 
-    public InternalChartPanel[] charts = {topLeftPanel, topRightPanel, bottomLeftPanel, bottomRightPanel };
+    public InternalChartPanel[] charts = {topLeftPanel};
 
     public FrameHistogramPanel() {
         //this.setLayout(new BorderLayout());
@@ -70,26 +70,23 @@ public class FrameHistogramPanel extends JPanel {
             }
         });
 
-        this.centerPanel.setLayout(new GridLayout(2, 2));
+        this.centerPanel.setLayout(new GridLayout(1, 1));
         this.add(centerPanel, BorderLayout.CENTER);
 
 
         this.centerPanel.add(topLeftPanel);
-        centerPanel.add(topRightPanel);
-        centerPanel.add(bottomLeftPanel);
-        centerPanel.add(bottomRightPanel);
+//        centerPanel.add(topRightPanel);
+//        centerPanel.add(bottomLeftPanel);
+//        centerPanel.add(bottomRightPanel);
     }
 
-    public void loadHistograms (ArrayList<ArrayList<Double>> topLeft, ArrayList < ArrayList<Double> > topRight, ArrayList < ArrayList<Double> >  bottomLeft, ArrayList < ArrayList<Double>> bottomRight) {
+    public void loadHistogram (ArrayList<int[]> topLeft) {
         topLeftPanel.allValues = topLeft;
-        topRightPanel.allValues = topRight;
-        bottomRightPanel.allValues = bottomRight;
-        bottomLeftPanel.allValues = bottomLeft;
+//        topRightPanel.allValues = topRight;
+//        bottomRightPanel.allValues = bottomRight;
+//        bottomLeftPanel.allValues = bottomLeft;
 
-        for (InternalChartPanel panel : charts) {
-            panel.showChartForFrame(0);
-        }
-
+       topLeftPanel.showChartForFrame(0);
         slider.setMaximum(topLeft.size());
     }
 }

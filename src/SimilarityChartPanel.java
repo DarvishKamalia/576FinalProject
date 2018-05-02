@@ -1,6 +1,9 @@
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
@@ -22,8 +25,12 @@ public class SimilarityChartPanel extends JPanel {
             dataSet.addValue(values.get(i), "similarity", Integer.toString(i));
         }
 
-        JFreeChart chart = ChartFactory.createLineChart("Similarity", "", "Similarity", dataSet);
+        JFreeChart chart = ChartFactory.createLineChart("Difference", "", "", dataSet);
         chart.removeLegend();
+
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        ValueAxis range = plot.getRangeAxis();
+        range.setVisible(false);
 
         if (chartPanel == null) {
             chartPanel = new ChartPanel(chart);

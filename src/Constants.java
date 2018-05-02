@@ -4,5 +4,4 @@ public class Constants {
     static String histogramDirectory = "histograms/";
     static String queryDirectory = "query/";
     static int NUMBER_OF_CLUSTERS = 64;
-
 }
