@@ -60,6 +60,7 @@ public class MainWindow extends JFrame {
 
         // TODO: Replace
         chart.loadSimilarityChart(generateValues());
+
     }
 
     private ArrayList <Double> generateValues() {
