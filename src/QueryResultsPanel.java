@@ -7,7 +7,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class QueryResultsPanel extends JPanel {
     private final MainWindow mainWindow;
@@ -56,7 +58,7 @@ public class QueryResultsPanel extends JPanel {
         }
     }
 
-    public void setResults(String[] results) {
+    public void setResults(ArrayList<String> results ) {
         listModel.removeAllElements();
         for (String result : results) {
             listModel.addElement(result);

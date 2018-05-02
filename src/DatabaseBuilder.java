@@ -3,14 +3,12 @@ import com.sun.tools.javac.code.Attribute;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DatabaseBuilder {
-    KMeans means = new KMeans();
-
-
+    private KMeans means = new KMeans();
 
     public static void main(String[] args) {
         DatabaseBuilder builder = new DatabaseBuilder();
@@ -33,7 +31,9 @@ public class DatabaseBuilder {
 
         ColorTuple[] centers = means.createBuckets(colors);
 
-        String[] videoNames = {"flowers"};
+        writeObjectToFile(centers, Constants.baseDirectory + Constants.dataBaseDirectory + "means.hst");
+
+        String[] videoNames = {"interview", "movie", "sports", "starcraft"};
 
         IOHandler handler = new IOHandler();
 
@@ -43,32 +43,34 @@ public class DatabaseBuilder {
             File[] directoryListing = dir.listFiles();
             Arrays.sort(directoryListing);
 
-            ArrayList < ArrayList <Double > > frameHistograms = new ArrayList<ArrayList<Double>>();
+            ArrayList < int[] > frameHistograms = new ArrayList< int [] >();
 
             if (directoryListing != null) {
                 for (int i = 0; i < directoryListing.length; i++) {
                     File frameFile = directoryListing[i];
                     if (frameFile.getAbsolutePath().contains(".rgb")) { // Ensure it is a frame file
                         BufferedImage frame = handler.readImageFromFile(frameFile);
-                        ArrayList<Double> result = getCounts(frame, centers);
+                        int[] result = getCounts(frame, centers);
                         frameHistograms.add(result);
                         System.out.println("Completed a frame: " + Integer.toString(i));
                     }
                 }
             }
 
-            for (ArrayList<Double> list : frameHistograms) {
-                System.out.println(Arrays.toString(list.toArray()));
-            }
+            writeObjectToFile(frameHistograms, Constants.baseDirectory + Constants.dataBaseDirectory + Constants.histogramDirectory + videoName + ".hst");
+
+//            for (int[] list : frameHistograms) {
+//                System.out.println(Arrays.toString(list);
+//            }
         }
     }
 
-    private ArrayList<Double> getCounts (BufferedImage frame, ColorTuple[] centers) {
-        ArrayList<Double> results = new ArrayList<Double>();
+    public int[] getCounts (BufferedImage frame, ColorTuple[] centers) {
+        int[] results = new int[Constants.NUMBER_OF_CLUSTERS];
         KMeans means = new KMeans();
 
         for (int i = 0; i < Constants.NUMBER_OF_CLUSTERS; i++) {
-            results.add(0.0);
+            results[i] = 0;
         }
 
         for (int i = 0; i < frame.getWidth(); i++) {
@@ -78,12 +80,22 @@ public class DatabaseBuilder {
                 Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsv);
                 ColorTuple pixelValue = new ColorTuple(hsv);
                 int targetIndex = means.getTargetIndex(pixelValue, centers);
-                results.set(targetIndex, results.get(targetIndex) + 1);
+                results[targetIndex]++;
             }
         }
 
         return results;
     }
 
-    private void writeResultsToFile (ArrayList< ArrayList <Double> > )
+    private void writeObjectToFile (Serializable object , String filePath) {
+        try{
+            FileOutputStream fos= new FileOutputStream(filePath);
+            ObjectOutputStream oos= new ObjectOutputStream(fos);
+            oos.writeObject(object);
+            oos.close();
+            fos.close();
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+    }
 }

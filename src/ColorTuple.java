@@ -1,4 +1,6 @@
-public class ColorTuple {
+import java.io.Serializable;
+
+public class ColorTuple implements Serializable {
     public double h;
     public double s;
     public double v;
