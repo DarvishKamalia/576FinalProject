@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
@@ -14,6 +15,10 @@ import java.awt.Color;
 public class Analyzer {
 	private static float[] hsbValues = {0,0,0};
 	private final static int NUMBER_OF_CLUSTERS = 64;
+	static double[] normalizedMeans1 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans2 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans3 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans4 = new double[NUMBER_OF_CLUSTERS];
 	
 	public static double[] bucketTo4096(double r, double g, double b) {
 		int rCount = 0;
@@ -126,34 +131,45 @@ public class Analyzer {
 	}
 	
 	public static void main(String[] args) {
-		double[][] rgbValues = calculateRGB("first001.rgb");
+		double[][] rgbValues = calculateRGB("flower.rgb");
 		double redValue = 0, greenValue = 0, blueValue = 0;
 		int width = 352;
 		int height = 288;
 		
-		ArrayList<Double> hValues = new ArrayList<Double>();
-		
 		KMeans kMeans  = new KMeans();
-		int count = 0;
 		
+		
+		ArrayList<Double> hValues = new ArrayList<Double>();
+	
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
+				
 				redValue = ((int) rgbValues[j][i] >> 16) & 0xFF;
 				greenValue = ((int) rgbValues[j][i] >> 8) & 0xFF;
 				blueValue = (int) rgbValues[j][i] & 0xFF;
-				
+					
 				double[] bucketedRGB = bucketTo4096(redValue, greenValue, blueValue);
-				
-				
+					
+					
 				float[] hsbValues = RGBtoHSB(bucketedRGB[0], bucketedRGB[1], bucketedRGB[2]);
 				hValues.add((double) hsbValues[0]);
 				
 			}
 		}
-		System.out.println(hValues);
 		
 		kMeans.sort(hValues);
+		
+		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
+			for (int j=0; j < NUMBER_OF_CLUSTERS; j++) {
+				normalizedMeans1[i] = kMeans.currentMeans[i] * kMeans.calculateEuclidianDistance(kMeans.currentMeans[i], kMeans.currentMeans[j]);
+				
+			}
 			
+		}
+	
+		System.out.println(Arrays.toString(normalizedMeans1));
+				
+	
 	}
 
 }
