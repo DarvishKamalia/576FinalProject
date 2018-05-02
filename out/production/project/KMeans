@@ -1,33 +1,30 @@
 package org.wikijava.sound.playWave;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+
 
 public class KMeans {
 	private final static int NUMBER_OF_CLUSTERS = 64;
+	private double HValue;
+	private static double chiSquare = 0;
 	static double[] sums = new double[NUMBER_OF_CLUSTERS];
 	static double[] means = new double[NUMBER_OF_CLUSTERS];
-	static double[] normalizedMeans = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans1 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans2 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans3 = new double[NUMBER_OF_CLUSTERS];
+	static double[] normalizedMeans4 = new double[NUMBER_OF_CLUSTERS];
 	
 	static ArrayList<ArrayList<Integer>> clusterNumbersOuter = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<Double> clusterValuesInner = new ArrayList<Double>();
-	
-	private double HValue;
 
-
-	 public void setHValue(double h) {
-		 this.HValue = h;
-	 }
+	public void setHValue(double h) {
+		this.HValue = h;
+	}
 	 
-	 public double getHValue() {
-		 return HValue;
-	 }
+	public double getHValue() {
+		return HValue;
+	}
 
-
-	public static void main(String args[]) {
+	public static void sort() {
 	
 		boolean flag = true;
 		
@@ -38,32 +35,26 @@ public class KMeans {
 			//arbitrarily set all means to the first value in each cluster to start
 			means[f] = clusterNumbersOuter.get(f).get(0);
 			
-			//64 clusters with cluster number at index
+			//set all 64 clusters with cluster number at index
 			clusterNumbersOuter.get(f).get(f+1); 
 		}
 		
 		int countOfChangedValues = 0;
 		int movedValue;
 		do {
-			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-				double[] storeMeanValues;
-				
-			}
-			
 			
 			double minimum = Double.POSITIVE_INFINITY;
-			int clusterNumber;
 			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-				for (int m = 0; m < clusterValuesInner.size(); m++) {
-					if (Math.abs((clusterValuesInner.get(m) - means[i])) < minimum) {
+				for (int m = 0; m < clusterNumbersOuter.get(i).size(); m++) {
+					if (Math.abs((clusterNumbersOuter.get(i).get(m) - means[i])) < minimum) {
 						//change minimum difference
-						minimum = Math.abs(clusterValuesInner.get(m) - means[i]);
+						minimum = Math.abs(clusterNumbersOuter.get(i).get(m) - means[i]);
 						
 						//remove value from original cluster
 						clusterValuesInner.remove(m);
-						//add value to new cluster
-						clusterNumbersOuter.get(i).get(m);	
+						//add value to new cluster	
 						movedValue = clusterNumbersOuter.get(i).get(m);
+						clusterNumbersOuter.get(i).add(movedValue);
 						countOfChangedValues++;
 					
 					} 
@@ -86,24 +77,55 @@ public class KMeans {
 			
 	}
 	
-	public static void extractHistograms() {
-		//during matching each of five histograms from query image is matched to the corresponding histogram of database images
+	public static void divideToFourHistograms() {
+		int width = 352;
+		int height = 288;
+		//top left
+		for (int i = 0; i < width/2; i++) {
+			for (int j =0; j < height/2; j++) {
+				normalizedMeans1[i] = means[i] * calculateEuclidianDistance(means[i], means[j]);
+			}
+		}
 		
-		//in order to incorporate similarity between colors, we define color similarity mattrix
+		//top right
 		
-		//H'(i) = summation of(H(j)*A(i,j) from j = 1-64).... H' is smoothed and H(j) is original
-		KMeans hist = new KMeans();
+		for (int i =width/2; i < width; i++) {
+			for (int j =0; j < height/2; j++) {
+				normalizedMeans2[i] = means[i] * calculateEuclidianDistance(means[i], means[j]);
+			}
+		}
 		
-		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-			for (int j = 0; j < NUMBER_OF_CLUSTERS; j++) {
-				normalizedMeans[i] = means[i] * hist.calcEuclidianDistance(means[i], means[j]);
+		//bottom left
+		
+		for (int i = 0; i < width/2; i++) {
+			for (int j =height/2; j < height; j++) {
+				normalizedMeans3[i] = means[i] * calculateEuclidianDistance(means[i], means[j]);
+			}
+		}
+		
+		//bottom right
+		
+		for (int i = width/2; i < width; i++) {
+			for (int j =height/2; j < height; j++) {
+				normalizedMeans4[i] = means[i] * calculateEuclidianDistance(means[i], means[j]);
 			}
 		}
 		
 	}
 	
-	public static double calcEuclidianDistance(double h1, double h2) {
-		return Math.sqrt(Math.pow(Math.abs(h1-h2), 2));
+	public static double calculateEuclidianDistance(double h1, double h2) {
+		return Math.sqrt(Math.pow(h1-h2, 2));
 	}
+	
+	public static double calculateChiDistance(int queryClusterNumber, int databaseClusterNumber) {
+		
+		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
+			chiSquare = chiSquare + (Math.pow((clusterNumbersOuter.get(queryClusterNumber).get(i)-clusterNumbersOuter.get(databaseClusterNumber).get(i)),
+					2))/(clusterNumbersOuter.get(queryClusterNumber).get(i)+clusterNumbersOuter.get(databaseClusterNumber).get(i));
+		}
+	
+		return chiSquare;
+	}
+	
 	
 }

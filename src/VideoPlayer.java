@@ -122,7 +122,6 @@ public class VideoPlayer extends JPanel {
         panel.img = handler.readImageFromFile(frameFile, 352, 288);
         panel.repaint();
         scrubber.setValue(currentLocation);
-        mainWindow.didSet
     }
 
     public void play() {

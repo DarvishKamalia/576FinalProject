@@ -8,11 +8,10 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class SimilarityChartView extends JPanel {
+public class SimilarityChartPanel extends JPanel {
     private ChartPanel chartPanel = null;
 
-    public SimilarityChartView() {
-        //this.setLayout(new BorderLayout());
+    public SimilarityChartPanel() {
         this.setLayout(new BorderLayout());
     }
 
@@ -25,7 +24,6 @@ public class SimilarityChartView extends JPanel {
 
         JFreeChart chart = ChartFactory.createLineChart("Similarity", "", "Similarity", dataSet);
         chart.removeLegend();
-
 
         if (chartPanel == null) {
             chartPanel = new ChartPanel(chart);

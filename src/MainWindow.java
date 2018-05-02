@@ -8,8 +8,10 @@ public class MainWindow extends JFrame {
     private QueryResultsPanel queryResultsPanel;
     private VideoPlayer queryVideoPlayer;
     private VideoPlayer resultVideoPlayer;
-    private SimilarityChartView chart = new SimilarityChartView();
-    private
+    private SimilarityChartPanel chart = new SimilarityChartPanel();
+    private FrameHistogramPanel queryHistogramPanel = new FrameHistogramPanel();
+    private FrameHistogramPanel resultVideoPanel = new FrameHistogramPanel();
+
 
     public MainWindow() {
         setTitle("576 Final Project");
@@ -19,11 +21,14 @@ public class MainWindow extends JFrame {
         queryResultsPanel = new QueryResultsPanel(this);
         queryVideoPlayer = new VideoPlayer("Query Video", this);
         resultVideoPlayer = new VideoPlayer("Result Video", this);
-        contentPanel.setLayout(new GridLayout(2,2));
+        contentPanel.setLayout(new GridLayout(3,2));
         contentPanel.add(queryResultsPanel);
         contentPanel.add(chart);
         contentPanel.add(queryVideoPlayer);
         contentPanel.add(resultVideoPlayer);
+        contentPanel.add(queryHistogramPanel);
+        contentPanel.add(resultVideoPanel);
+
         this.setContentPane(contentPanel);
         this.pack();
     }
@@ -34,7 +39,6 @@ public class MainWindow extends JFrame {
         // TODO: Replace
         String[] results = {"flowers", "movie", "musicvideo"};
         queryResultsPanel.setResults(results);
-
     }
 
     public void didSelectResultVideo(String video) {
@@ -52,6 +56,4 @@ public class MainWindow extends JFrame {
         }
         chart.loadSimilarityChart(values);
     }
-
-
 }
