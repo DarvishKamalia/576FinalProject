@@ -43,18 +43,16 @@ public class FrameHistogramPanel extends JPanel {
             else {
                 chartPanel.setChart(chart);
             }
-
         }
-
     }
 
     private JSlider slider = new JSlider(JSlider.HORIZONTAL);
     public JPanel centerPanel = new JPanel();
 
-    private InternalChartPanel bottomRightPanel;
-    private InternalChartPanel bottomLeftPanel;
-    private InternalChartPanel topRightPanel;
-    private InternalChartPanel topLeftPanel;
+    private InternalChartPanel bottomRightPanel = new InternalChartPanel();
+    private InternalChartPanel bottomLeftPanel = new InternalChartPanel();
+    private InternalChartPanel topRightPanel = new InternalChartPanel();
+    private InternalChartPanel topLeftPanel = new InternalChartPanel();
 
     public InternalChartPanel[] charts = {topLeftPanel, topRightPanel, bottomLeftPanel, bottomRightPanel };
 
@@ -92,6 +90,6 @@ public class FrameHistogramPanel extends JPanel {
             panel.showChartForFrame(0);
         }
 
-        slider.setMaximum(topLeft);
+        slider.setMaximum(topLeft.size());
     }
 }

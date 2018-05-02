@@ -11,7 +11,7 @@ public class MainWindow extends JFrame {
     private SimilarityChartPanel chart = new SimilarityChartPanel();
     private FrameHistogramPanel queryHistogramPanel = new FrameHistogramPanel();
     private FrameHistogramPanel resultVideoPanel = new FrameHistogramPanel();
-
+    private Random random = new Random();
 
     public MainWindow() {
         setTitle("576 Final Project");
@@ -39,21 +39,40 @@ public class MainWindow extends JFrame {
         // TODO: Replace
         String[] results = {"flowers", "movie", "musicvideo"};
         queryResultsPanel.setResults(results);
+
+        ArrayList < ArrayList <Double> > topLeft = new ArrayList < ArrayList < Double> >();
+        ArrayList < ArrayList <Double> > topRight = new ArrayList < ArrayList < Double> >();
+        ArrayList < ArrayList <Double> > bottomLeft = new ArrayList < ArrayList < Double> >();
+        ArrayList < ArrayList <Double> > bottomRight = new ArrayList < ArrayList < Double> >();
+
+        for (int i = 0; i < 64; i++) {
+            topLeft.add(generateValues());
+            topRight.add(generateValues());
+            bottomLeft.add(generateValues());
+            bottomRight.add(generateValues());
+        }
+
+        queryHistogramPanel.loadHistograms(topLeft, topRight, bottomLeft, bottomRight);
     }
 
     public void didSelectResultVideo(String video) {
         resultVideoPlayer.load(Constants.baseDirectory + Constants.dataBaseDirectory + video);
 
         // TODO: Replace
+        chart.loadSimilarityChart(generateValues());
+    }
+
+    private ArrayList <Double> generateValues() {
         ArrayList<Double> values = new ArrayList<Double>();
 
         for (int i = 0; i < 100; i++) {
             double start = 0;
             double end = 1;
-            double random = new Random().nextDouble();
-            double result = start + (random * (end - start));
+            double rand = random.nextDouble();
+            double result = start + (rand * (end - start));
             values.add(result);
         }
-        chart.loadSimilarityChart(values);
+
+        return values;
     }
 }
