@@ -1,31 +1,36 @@
 package org.wikijava.sound.playWave;
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class KMeans {
 	private final static int NUMBER_OF_CLUSTERS = 64;
 	private static double chiSquare = 0;
 	static double[] sums = new double[NUMBER_OF_CLUSTERS];
-	static double[] previousMeans = new double[NUMBER_OF_CLUSTERS];
-	static double[] currentMeans = new double[NUMBER_OF_CLUSTERS];
-	static double[] normalizedMeans1 = new double[NUMBER_OF_CLUSTERS];
-	static double[] normalizedMeans2 = new double[NUMBER_OF_CLUSTERS];
-	static double[] normalizedMeans3 = new double[NUMBER_OF_CLUSTERS];
-	static double[] normalizedMeans4 = new double[NUMBER_OF_CLUSTERS];
+	public static double[] previousMeans = new double[NUMBER_OF_CLUSTERS];
+	public double[] currentMeans = new double[NUMBER_OF_CLUSTERS];
+
+	
+	double minimum;
+	boolean flag = true;
 	
 	static ArrayList<ArrayList<Double>> clusterNumbersOuter = new ArrayList<ArrayList<Double>>();
+	static ArrayList<ArrayList<Double>> clusterNumbersOuterCopy = new ArrayList<ArrayList<Double>>();
+	static ArrayList<ArrayList<Double>> normalizedMeans = new ArrayList<ArrayList<Double>>();
 
-	public void sort(ArrayList<Double> hValues) {
+	public ArrayList<ArrayList<Double>> sort(ArrayList<Double> hValues) {
 		
 		//set all of first ArrayLists's values to hValues
 	
-		boolean flag = true;
 		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
 			//add ArrayList to outer to set size of 64
 			clusterNumbersOuter.add(new ArrayList<Double>());
 		}
 
-		int totalIterations = hValues.size() / NUMBER_OF_CLUSTERS; 
+		int totalIterations = 1584; 
 
 		for (int f = 0; f < NUMBER_OF_CLUSTERS; f++) {
 			
@@ -42,97 +47,88 @@ public class KMeans {
 			currentMeans[f] = clusterNumbersOuter.get(f).get(0);		
 		}
 
-		int countOfChangedValues = 0;
-		double movedValue;
 		do {
 			
-			double minimum = Double.POSITIVE_INFINITY;
+			//each cluster
 			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-				sums[i] = 0.0;
-				for (int m = 0; m < clusterNumbersOuter.get(i).size(); m++) {
-					if (Math.abs((clusterNumbersOuter.get(i).get(m) - currentMeans[i])) < minimum) {
-						//change minimum difference
-						minimum = Math.abs(clusterNumbersOuter.get(i).get(m) - currentMeans[i]);
-						//add value to new cluster	
-						movedValue = clusterNumbersOuter.get(i).get(m);
-						//remove value from original cluster
-						clusterNumbersOuter.get(i).remove(m);
-						
-						clusterNumbersOuter.get(i).add(movedValue);
-						countOfChangedValues++;
+				//each value
+				sums[i] =0;
+				for (int k = 0; k < clusterNumbersOuter.get(i).size(); k++) {
 					
+					double currentValue = clusterNumbersOuter.get(i).get(k); 
+										
+					ArrayList<Double> minimums = new ArrayList<Double>();
+					
+					//each mean
+					for (int m = 0; m < currentMeans.length; m++) {
+						/*
+						 * calculate difference for each value (singular) in each cluster (64) with each mean (64) 
+						 * would result in 64 differences for each value 
+						 * 4096  total differences * total number of values = total number of differences 
+						 */
+						
+						minimums.add(Math.abs((clusterNumbersOuter.get(i).get(k) - currentMeans[m])));	
 					}
-	
+					
+					minimum = Collections.min(minimums);
+					
+					int targetIndex = minimums.indexOf(minimum);
+					
+					// Move the value to the cluster at targetIndex 
+					
+					clusterNumbersOuter.get(i).remove(k); 
+					clusterNumbersOuter.get(targetIndex).add(currentValue); 
 				}
+			}
+		
+			for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
 				
-				for (int k = 0; k < countOfChangedValues; k++) {
+				for (int k = 0; k < clusterNumbersOuter.get(i).size(); k++) {
 					//recalculate sums
 					sums[i] += clusterNumbersOuter.get(i).get(k); 
+				
 				}
 				
 				//recalculate means
-				currentMeans[i] = sums[i]/(clusterNumbersOuter.get(i).size());
-				
+				double denominator = clusterNumbersOuter.get(i).size(); 
+				currentMeans[i] = denominator == 0 ? 0 : sums[i]/denominator;
+//				System.out.println(currentMeans[i]);
 				
 			}
+		
 			
-			if (currentMeans.equals(previousMeans)) {
-				flag = false;
-				break;
-			} else {
-				previousMeans = currentMeans.clone();
-			}	
 			
+			for (int i = 0; i < currentMeans.length; i++) {
+				if (Arrays.equals(currentMeans, previousMeans)) {
+					flag = false;
+					break;
+				} else {
+					
+					previousMeans[i] = currentMeans[i];	
+					
+				}			
+			}
+		
 		} while (flag);
-			
+
+		return clusterNumbersOuter;
 	}
 	
-	public static void divideToFourHistograms() {
-		int width = 352;
-		int height = 288;
-		//top left
-		for (int i = 0; i < width/2; i++) {
-			for (int j =0; j < height/2; j++) {
-				normalizedMeans1[i] = currentMeans[i] * calculateEuclidianDistance(currentMeans[i], currentMeans[j]);
-			}
-		}
-		
-		//top right
-		for (int i =width/2; i < width; i++) {
-			for (int j =0; j < height/2; j++) {
-				normalizedMeans2[i] = currentMeans[i] * calculateEuclidianDistance(currentMeans[i], currentMeans[j]);
-			}
-		}
-		
-		//bottom left
-		for (int i = 0; i < width/2; i++) {
-			for (int j =height/2; j < height; j++) {
-				normalizedMeans3[i] = currentMeans[i] * calculateEuclidianDistance(currentMeans[i], currentMeans[j]);
-			}
-		}
-		
-		//bottom right
-		for (int i = width/2; i < width; i++) {
-			for (int j =height/2; j < height; j++) {
-				normalizedMeans4[i] = currentMeans[i] * calculateEuclidianDistance(currentMeans[i], currentMeans[j]);
-			}
-		}
-		
-	}
-	
-	public static double calculateEuclidianDistance(double h1, double h2) {
+	public double calculateEuclidianDistance(double h1, double h2) {
 		return Math.sqrt(Math.pow(h1-h2, 2));
 	}
 	
-	public static double calculateChiDistance(int queryClusterNumber, int databaseClusterNumber) {
+	public static double calculateChiDistance(ArrayList<ArrayList<Double>> query, ArrayList<ArrayList<Double>> database) {
 		
 		for (int i = 0; i < NUMBER_OF_CLUSTERS; i++) {
-			chiSquare = chiSquare + (Math.pow((clusterNumbersOuter.get(queryClusterNumber).get(i)-clusterNumbersOuter.get(databaseClusterNumber).get(i)),
-					2))/(clusterNumbersOuter.get(queryClusterNumber).get(i)+clusterNumbersOuter.get(databaseClusterNumber).get(i));
+			for (int j = 0; j < NUMBER_OF_CLUSTERS;j++) {
+				chiSquare = chiSquare + (Math.pow((query.get(i).size()-database.get(i).size()),
+						2))/(query).get(i).size()+database.get(i).size();
+			}
+			
 		}
 	
 		return chiSquare;
 	}
-	
 	
 }
