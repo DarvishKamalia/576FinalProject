@@ -49,7 +49,10 @@ public class IOHandler {
         frame.getContentPane().add(lbIm2, c);
     }
 
-	public BufferedImage readImageFromFile(File file, int width, int height) {
+	public BufferedImage readImageFromFile(File file) {
+
+	    int width = 352;
+	    int height = 288;
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 

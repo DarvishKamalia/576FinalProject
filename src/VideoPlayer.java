@@ -119,7 +119,7 @@ public class VideoPlayer extends JPanel {
     public void loadFromCurrentPosition() {
         File frameFile = imageSequence.get(currentLocation);
         //System.out.println(frameFile.getAbsolutePath());
-        panel.img = handler.readImageFromFile(frameFile, 352, 288);
+        panel.img = handler.readImageFromFile(frameFile);
         panel.repaint();
         scrubber.setValue(currentLocation);
     }
